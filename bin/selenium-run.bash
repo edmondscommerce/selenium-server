@@ -1,5 +1,5 @@
 #!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd -p "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR/../binaries/
 MAJOR_VERSION=2.44
 VERSION=${MAJOR_VERSION}.0

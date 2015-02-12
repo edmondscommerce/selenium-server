@@ -1,5 +1,5 @@
 #!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd -p "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 echo '' > nohup.out
 nohup $DIR/selenium-run.bash "$@" &
