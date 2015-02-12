@@ -1,4 +1,13 @@
 #!/bin/bash
+#set -x
+
+MAJOR_VERSION=2.44
+VERSION=${MAJOR_VERSION}.0
+JAR_FILE=selenium-server-standalone-${VERSION}.jar
+
+CHROMEDRIVER_VERSION=2.14
+CHROMEDRIVER_FILE=chromedriver-${CHROMEDRIVER_VERSION}
+
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
@@ -12,12 +21,7 @@ then
     echo "Failed cd-ing into the the binaries folder, aborting"
     exit 1
 fi
-MAJOR_VERSION=2.44
-VERSION=${MAJOR_VERSION}.0
-JAR_FILE=selenium-server-standalone-${VERSION}.jar
 
-CHROMEDRIVER_VERSION=2.14
-CHROMEDRIVER_FILE=chromedriver-${CHROMEDRIVER_VERSION}
 
 ## Host File bug sanity check
 grep '127.0.0.1 localhost' /etc/hosts > /dev/null
@@ -77,17 +81,8 @@ fi
 
 echo "Starting Selenium"
 
-echo "Checking if already running:"
-h=$(pgrep -f selenium-server)
-if [[ -n $h ]]; then
-    echo "found running instance, killing that now"
-    kill $h
-    while [[ -n $h ]]; do
-        sleep 1
-        h=$(pgrep -f selenium-server)
-    done
-fi
-echo "done"
+echo "Killing if already running:"
+source $DIR/selenium-stop.bash
 
 
 if [[ "$@" =~ .*firefox.* ]]
