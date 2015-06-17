@@ -24,7 +24,7 @@ fi
 
 
 ## Host File bug sanity check
-grep '127.0.0.1 localhost' /etc/hosts > /dev/null
+grep -P '127.0.0.1\s*localhost' /etc/hosts > /dev/null
 if [[ $? != 0 ]]
 then
     echo "
