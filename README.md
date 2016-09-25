@@ -8,7 +8,7 @@ It has only been run and tested on Linux.
 
 To install it simply add 
 
-`"edmondscommerce/selenium-server": "~1"`
+`"tajawal/selenium-server": "dev-master"`
 
 To your composer.json file and then run composer update
 
