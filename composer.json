@@ -1,16 +1,19 @@
 {
-    "name": "edmondscommerce/selenium-server",
-    "description": "Utilities for installing and running Selenium (with Chromedriver), ideal for use with Behat",
-    "keywords": ["Selenium", "Behat", "Selenium-Server", "Chromedriver", "Browser Testing"],
-    "homepage": "https://www.edmondscommerce.co.uk",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "edmondscommerce",
-            "email": "info@edmondscommerce.co.uk"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require": {},
-    "bin": ["bin/selenium-background-run.bash", "bin/selenium-run.bash", "bin/selenium-stop.bash"]
+  "name": "tajawal/selenium-server",
+  "description": "Utilities for installing and running Selenium (with Chromedriver)",
+  "keywords": [
+    "Selenium",
+    "Behat",
+    "Selenium-Server",
+    "Chromedriver",
+    "Browser Testing"
+  ],
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "require": {},
+  "bin": [
+    "bin/selenium-background-run.bash",
+    "bin/selenium-run.bash",
+    "bin/selenium-stop.bash"
+  ]
 }

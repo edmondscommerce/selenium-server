@@ -1,11 +1,11 @@
 #!/bin/bash
 #set -x
 
-MAJOR_VERSION=2.53
+MAJOR_VERSION=2.53.1
 VERSION=${MAJOR_VERSION}.0
 JAR_FILE=selenium-server-standalone-${VERSION}.jar
 
-CHROMEDRIVER_VERSION=2.21
+CHROMEDRIVER_VERSION=2.24
 CHROMEDRIVER_FILE=chromedriver-${CHROMEDRIVER_VERSION}
 
 SOURCE="${BASH_SOURCE[0]}"
@@ -24,7 +24,7 @@ fi
 
 
 ## Host File bug sanity check
-grep -P '127.0.0.1\s*localhost' /etc/hosts > /dev/null
+grep '127.0.0.1\s*localhost' /etc/hosts > /dev/null
 if [[ $? != 0 ]]
 then
     echo "
