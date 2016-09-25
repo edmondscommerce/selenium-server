@@ -2,11 +2,24 @@
 #set -x
 
 MAJOR_VERSION=2.53
-VERSION=${MAJOR_VERSION}.0
+VERSION=${MAJOR_VERSION}.1
 JAR_FILE=selenium-server-standalone-${VERSION}.jar
 
-CHROMEDRIVER_VERSION=2.21
-CHROMEDRIVER_FILE=chromedriver-${CHROMEDRIVER_VERSION}
+CHROMEDRIVER_VERSION=2.24
+OS=mac64
+
+if [ "$(uname)" == "Darwin" ]; then
+    OS=mac64
+    # Do something under Mac OS X platform
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    OS=linux64
+    # Do something under GNU/Linux platform
+elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+    # Do something under Windows NT platform
+    OS=win32
+fi
+CHROMEDRIVER_FILE=chromedriver-${OS}-${CHROMEDRIVER_VERSION}
+
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -63,7 +76,7 @@ fi
 if [ ! -f $CHROMEDRIVER_FILE ]
 then
     echo "Chromedriver file not found - trying to wget the file"
-    DOWNLOAD_URL="http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
+    DOWNLOAD_URL="http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_${OS}.zip"
     echo $DOWNLOAD_URL
     wget $DOWNLOAD_URL
     if [[ $? != 0 ]]
@@ -75,7 +88,7 @@ then
     then
         rm chromedriver
     fi
-    unzip chromedriver_linux64.zip
+    unzip chromedriver_${OS}.zip
     mv chromedriver $CHROMEDRIVER_FILE
 fi
 
