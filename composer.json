@@ -1,10 +1,12 @@
 {
   "name": "tajawal/selenium-server",
-  "description": "Utilities for installing and running Selenium (with Chromedriver)",
+  "description": "Utilities for installing and running appium and Selenium (with Chromedriver)",
   "keywords": [
     "Selenium",
+    "Appium",
     "Behat",
     "Selenium-Server",
+    "Appium-Server",
     "Chromedriver",
     "Browser Testing"
   ],
@@ -12,6 +14,9 @@
   "minimum-stability": "dev",
   "require": {},
   "bin": [
+    "bin/appium-background-run.bash",
+    "bin/appium-run.bash",
+    "bin/appium-stop.bash",
     "bin/selenium-background-run.bash",
     "bin/selenium-run.bash",
     "bin/selenium-stop.bash"
