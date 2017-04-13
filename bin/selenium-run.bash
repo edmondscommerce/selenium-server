@@ -8,6 +8,9 @@ JAR_FILE=selenium-server-standalone-${VERSION}.jar
 CHROMEDRIVER_VERSION=2.25
 CHROMEDRIVER_FILE=chromedriver-${CHROMEDRIVER_VERSION}
 
+FIREFOXDRIVER_VERSION=0.15.0
+FIREFOXDRIVER_FILE=geckodriver
+
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
@@ -77,6 +80,32 @@ then
     fi
     unzip chromedriver_linux64.zip
     mv chromedriver $CHROMEDRIVER_FILE
+fi
+
+if [ ! -f $FIREFOXDRIVER_FILE ] && [[ "$@" =~ .*firefox.* ]]
+then
+    if [ $(echo "$MAJOR_VERSION < 3.3" | bc -l) == 1 ]
+    then
+        echo "WARNING: the latest geckodriver requires selenium 3.3 and above";
+        exit 1
+    fi
+
+    echo "Firefoxdirver file not found - trying to wget the file"
+
+    DOWNLOAD_URL="https://github.com/mozilla/geckodriver/releases/download/v${FIREFOXDRIVER_VERSION}/geckodriver-v${FIREFOXDRIVER_VERSION}-linux64.tar.gz"
+    echo $DOWNLOAD_URL
+    wget $DOWNLOAD_URL
+    if [[ $? != 0 ]]
+    then
+        echo "Failed downloading, please grab it manually"
+        exit 1
+    fi
+    if [ -f $FIREFOXDRIVER_FILE ]
+    then
+        rm $FIREFOXDRIVER_FILE
+    fi
+    tar -xzvf geckodriver-v${FIREFOXDRIVER_VERSION}-linux64.tar.gz
+    mv geckodriver $FIREFOXDRIVER_FILE
 fi
 
 echo "Starting Selenium"
