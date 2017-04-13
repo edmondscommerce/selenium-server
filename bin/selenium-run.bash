@@ -5,8 +5,10 @@ MAJOR_VERSION=2.53
 VERSION=${MAJOR_VERSION}.0
 JAR_FILE=selenium-server-standalone-${VERSION}.jar
 
-CHROMEDRIVER_VERSION=2.25
+
+CHROMEDRIVER_VERSION=`curl http://chromedriver.storage.googleapis.com/LATEST_RELEASE`
 CHROMEDRIVER_FILE=chromedriver-${CHROMEDRIVER_VERSION}
+CURRENT_CHROMEDRIVER_VERSION_FILE=current_chromedriver_version.txt
 
 FIREFOXDRIVER_VERSION=0.15.0
 FIREFOXDRIVER_FILE=geckodriver
@@ -25,6 +27,21 @@ then
     exit 1
 fi
 
+# Making sure that the chrome driver is up to date
+if [ -f ${CURRENT_CHROMEDRIVER_VERSION_FILE} ]
+then
+    CURRENT_CHROMEDRIVER_VERSION=`cat ${CURRENT_CHROMEDRIVER_VERSION_FILE}`
+else
+    CURRENT_CHROMEDRIVER_VERSION=false
+fi
+
+echo ${CHROMEDRIVER_VERSION} > ${CURRENT_CHROMEDRIVER_VERSION_FILE}
+
+if [[ ${CURRENT_CHROMEDRIVER_VERSION} != ${CHROMEDRIVER_VERSION} && -f ${CHROMEDRIVER_FILE} ]]
+then
+    rm -f ${CHROMEDRIVER_FILE}
+    rm -f chromedriver_linux64.zip
+fi
 
 ## Host File bug sanity check
 grep -P '127.0.0.1\s*localhost' /etc/hosts > /dev/null
