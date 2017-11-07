@@ -1,11 +1,11 @@
 #!/bin/bash
 #set -x
 
-MAJOR_VERSION=2.53
-VERSION=${MAJOR_VERSION}.1
+MAJOR_VERSION=3.7
+VERSION=${MAJOR_VERSION}.0
 JAR_FILE=selenium-server-standalone-${VERSION}.jar
 
-CHROMEDRIVER_VERSION=2.24
+CHROMEDRIVER_VERSION=2.33
 OS=mac64
 
 if [ "$(uname)" == "Darwin" ]; then
@@ -106,5 +106,5 @@ then
 else
     echo "starting chrome selenium
     "
-    java -jar $JAR_FILE -Dwebdriver.chrome.driver=${CHROMEDRIVER_FILE}
+    java -Dwebdriver.chrome.driver=${CHROMEDRIVER_FILE} -jar $JAR_FILE
 fi
