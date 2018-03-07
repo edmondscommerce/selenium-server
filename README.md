@@ -1,4 +1,5 @@
 # selenium-server
+## By [Edmonds Commerce](https://www.edmondscommerce.co.uk)
 
 This is a simple package to easily run Selenium with Chrome driver.
 
