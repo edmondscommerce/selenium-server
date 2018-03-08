@@ -1,18 +1,19 @@
-#!/bin/bash
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-done
-DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+#!/usr/bin/env bash
+DIR=$(dirname $(readlink -f "$0"))
 cd $DIR
 
+source ./download-binaries.bash
+
 echo '' > nohup.out
-nohup ./selenium-run.bash "$@" &
+echo "
+Starting Selenium in the Background
+"
+nohup $DIR/selenium-run.bash "$@" &
+
 sleep 2
 
 cat nohup.out
-echo "
 
-Selenium Running"
+echo "
+Selenium Running
+"

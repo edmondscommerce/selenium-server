@@ -1,143 +1,70 @@
-#!/bin/bash
-#set -x
-
-MAJOR_VERSION=2.53
-VERSION=${MAJOR_VERSION}.0
-JAR_FILE=selenium-server-standalone-${VERSION}.jar
-
-
-CHROMEDRIVER_VERSION=`curl http://chromedriver.storage.googleapis.com/LATEST_RELEASE`
-CHROMEDRIVER_FILE=chromedriver-${CHROMEDRIVER_VERSION}
-CURRENT_CHROMEDRIVER_VERSION_FILE=current_chromedriver_version.txt
-
-FIREFOXDRIVER_VERSION=0.15.0
-FIREFOXDRIVER_FILE=geckodriver
-
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+#!/usr/bin/env bash
+DIR=$(dirname $(readlink -f "$0"))
+cd $DIR;
+set -e
+set -u
+set -o pipefail
+standardIFS="$IFS"
+IFS=$'\n\t'
+echo "
+===========================================
+$(hostname) $0 $@
+===========================================
+"
+# Error Handling
+backTraceExit () {
+    local err=$?
+    set +o xtrace
+    local code="${1:-1}"
+    printf "\n\nError in ${BASH_SOURCE[1]}:${BASH_LINENO[0]}. '${BASH_COMMAND}'\n\n exited with status: \n\n$err\n\n"
+    # Print out the stack trace described by $function_stack
+    if [ ${#FUNCNAME[@]} -gt 2 ]
+    then
+        echo "Call tree:"
+        for ((i=1;i<${#FUNCNAME[@]}-1;i++))
+        do
+            echo " $i: ${BASH_SOURCE[$i+1]}:${BASH_LINENO[$i]} ${FUNCNAME[$i]}(...)"
+        done
+    fi
+    echo "Exiting with status ${code}"
+    exit "${code}"
+}
+trap 'backTraceExit' ERR
+set -o errtrace
+missingPackages=false
+for package in unzip java
+do
+    if [[ "" == "$(which $package)" ]]
+    then
+        echo "Package $package is missing";
+        missingPackages=true;
+    fi
 done
-DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-cd $DIR/../binaries/
-if [[ $? != 0 ]]
+
+if [[ "false" != "$missingPackages" ]]
 then
-    echo "Failed cd-ing into the the binaries folder, aborting"
+    echo "Packages are missing, please install them"
     exit 1
 fi
 
-# Making sure that the chrome driver is up to date
-if [ -f ${CURRENT_CHROMEDRIVER_VERSION_FILE} ]
+jarFile=${1:-'false'}
+
+if [[ "false" == "$jarFile" ]]
 then
-    CURRENT_CHROMEDRIVER_VERSION=`cat ${CURRENT_CHROMEDRIVER_VERSION_FILE}`
-else
-    CURRENT_CHROMEDRIVER_VERSION=false
+    source ./download-binaries.bash
 fi
 
-echo ${CHROMEDRIVER_VERSION} > ${CURRENT_CHROMEDRIVER_VERSION_FILE}
-
-if [[ ${CURRENT_CHROMEDRIVER_VERSION} != ${CHROMEDRIVER_VERSION} && -f ${CHROMEDRIVER_FILE} ]]
-then
-    rm -f ${CHROMEDRIVER_FILE}
-    rm -f chromedriver_linux64.zip
-fi
-
-## Host File bug sanity check
-grep -P '127.0.0.1\s*localhost' /etc/hosts > /dev/null
-if [[ $? != 0 ]]
-then
-    echo "
-
-    WARNING
-
-    Selenium won't work unless your hosts file localhost aliases start explictly with:
-
-    127.0.0.1 localhost ...other aliases here
-
-    Please edit your hosts file and try again
-
-    See:
-    https://code.google.com/p/selenium/issues/detail?id=3280
-
-Your hosts line is:
-    "
-    grep '127.0.0.1' /etc/hosts
-    echo;
-    exit 1
-fi
-
-if [ ! -f $JAR_FILE ]
-then
-    echo "Selenium JAR file not found - trying to wget the file"
-    DOWNLOAD_URL="http://selenium-release.storage.googleapis.com/${MAJOR_VERSION}/selenium-server-standalone-${VERSION}.jar"
-    echo $DOWNLOAD_URL
-    wget $DOWNLOAD_URL
-    if [[ $? != 0 ]]
-    then
-        echo "Failed downloading, please grab it manually"
-        exit 1
-    fi
-fi
-
-if [ ! -f $CHROMEDRIVER_FILE ]
-then
-    echo "Chromedriver file not found - trying to wget the file"
-    DOWNLOAD_URL="http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
-    echo $DOWNLOAD_URL
-    wget $DOWNLOAD_URL
-    if [[ $? != 0 ]]
-    then
-        echo "Failed downloading, please grab it manually"
-        exit 1
-    fi
-    if [ -f chromedriver ]
-    then
-        rm chromedriver
-    fi
-    unzip chromedriver_linux64.zip
-    mv chromedriver $CHROMEDRIVER_FILE
-fi
-
-if [ ! -f $FIREFOXDRIVER_FILE ] && [[ "$@" =~ .*firefox.* ]]
-then
-    if [ $(echo "$MAJOR_VERSION < 3.3" | bc -l) == 1 ]
-    then
-        echo "WARNING: the latest geckodriver requires selenium 3.3 and above";
-        exit 1
-    fi
-
-    echo "Firefoxdirver file not found - trying to wget the file"
-
-    DOWNLOAD_URL="https://github.com/mozilla/geckodriver/releases/download/v${FIREFOXDRIVER_VERSION}/geckodriver-v${FIREFOXDRIVER_VERSION}-linux64.tar.gz"
-    echo $DOWNLOAD_URL
-    wget $DOWNLOAD_URL
-    if [[ $? != 0 ]]
-    then
-        echo "Failed downloading, please grab it manually"
-        exit 1
-    fi
-    if [ -f $FIREFOXDRIVER_FILE ]
-    then
-        rm $FIREFOXDRIVER_FILE
-    fi
-    tar -xzvf geckodriver-v${FIREFOXDRIVER_VERSION}-linux64.tar.gz
-    mv geckodriver $FIREFOXDRIVER_FILE
-fi
-
-echo "Starting Selenium"
+echo "Now Starting Selenium"
 
 echo "Killing if already running:"
-source $DIR/selenium-stop.bash
+bash $DIR/selenium-stop.bash
 
 
 if [[ "$@" =~ .*firefox.* ]]
 then
-    echo "starting firefox selenium
-    "
-    java -jar $JAR_FILE
+    echo "starting firefox selenium"
+    java -jar $jarFile
 else
-    echo "starting chrome selenium
-    "
-    java -jar $JAR_FILE -Dwebdriver.chrome.driver=${CHROMEDRIVER_FILE}
+    echo "starting chrome selenium"
+    java -jar $jarFile -Dwebdriver.chrome.driver=${chromedriverFile}
 fi
