@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
-DIR=$(dirname $(readlink -f "$0"))
-cd $DIR;
+source="${BASH_SOURCE[0]}"
+while [ -h "$source" ]; do # resolve $SOURCE until the file is no longer a symlink
+  dir="$( cd -P "$( dirname "$source" )" && pwd )"
+  source="$(readlink "$source")"
+  [[ $source != /* ]] && source="$dir/$source" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+dir="$( cd -P "$( dirname "$source" )" && pwd )"
+cd $dir;
 set -e
 set -u
 set -o pipefail
@@ -57,7 +63,7 @@ fi
 echo "Now Starting Selenium"
 
 echo "Killing if already running:"
-bash $DIR/selenium-stop.bash
+bash $dir/selenium-stop.bash
 
 
 if [[ "$@" =~ .*firefox.* ]]
