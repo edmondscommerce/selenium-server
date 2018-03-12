@@ -37,26 +37,12 @@ backTraceExit () {
 }
 trap 'backTraceExit' ERR
 set -o errtrace
-missingPackages=false
-for package in unzip java
-do
-    if [[ "" == "$(which $package)" ]]
-    then
-        echo "Package $package is missing";
-        missingPackages=true;
-    fi
-done
-
-if [[ "false" != "$missingPackages" ]]
-then
-    echo "Packages are missing, please install them"
-    exit 1
-fi
 
 jarFile=${1:-'false'}
 
 if [[ "false" == "$jarFile" ]]
 then
+    source ./check-deps.bash
     source ./download-binaries.bash
 fi
 

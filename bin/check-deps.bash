@@ -7,20 +7,27 @@ while [ -h "$source" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 dir="$( cd -P "$( dirname "$source" )" && pwd )"
 cd $dir;
-
-source ./check-deps.bash
-source ./download-binaries.bash
-
-echo '' > nohup.out
+set -e
+set -u
+set -o pipefail
+standardIFS="$IFS"
+IFS=$'\n\t'
 echo "
-Starting Selenium in the Background
+Checking Dependencies Installed
 "
-nohup $dir/selenium-run.bash "$@" &
+function checkInstalled(){
+    checkFor="$1"
+    set +e
+    if ! command -v "$checkFor"
+    then
+        printf "\nERROR:\nCommand $checkFor not available, please install it and try again\n\n"
+        exit 1
+    fi
+}
 
-sleep 2
-
-cat nohup.out
+checkInstalled "unzip"
+checkInstalled "java"
 
 echo "
-Selenium Running
+DONE Checking Dependencies
 "
