@@ -10,7 +10,6 @@
             "email": "info@edmondscommerce.co.uk"
         }
     ],
-    "minimum-stability": "dev",
     "require": {},
     "bin": ["bin/selenium-background-run.bash", "bin/selenium-run.bash", "bin/selenium-stop.bash"]
 }
