@@ -58,5 +58,5 @@ then
     java -jar $jarFile
 else
     echo "starting chrome selenium"
-    java -jar $jarFile -Dwebdriver.chrome.driver=${chromedriverFile}
+    java -Dwebdriver.chrome.driver=${chromedriverFile} -jar $jarFile
 fi
