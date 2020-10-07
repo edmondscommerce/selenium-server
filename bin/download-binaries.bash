@@ -16,7 +16,7 @@ echo "
 Downloading Binaries for Selenium
 "
 
-majorVersion=2.53
+majorVersion=3.14
 version=${majorVersion}.0
 jarFile=selenium-server-standalone-${version}.jar
 
